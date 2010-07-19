@@ -30,10 +30,12 @@ col_g="\e[32;1m"
 col_n="\e[0m"
 
 log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}..."
-git branch -d ${RemoteBranch} || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
+git branch -d ${RemoteBranch} \
+    || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
 
 log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}..."
-git push origin :heads/${RemoteBranch} || error "Suppression of remote branch failed!"
+git push origin :heads/${RemoteBranch} \
+    || error "Suppression of remote branch ${col_g}${RemoteBranch}${col_b} failed!"
 
 log "Updated list of all branches:"
 git branch -a
