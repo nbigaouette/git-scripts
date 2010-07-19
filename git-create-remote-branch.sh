@@ -4,6 +4,11 @@ help() {
     echo "Create a new branch on both local and remote repositories."
 }
 
+error() {
+    echo -e "\e[31;1mERROR: $@"
+    exit
+}
+
 if [[ -z "$1" ]]; then
     help
     echo "Usage:"
