@@ -8,7 +8,7 @@ if [[ "x$1" == "x" ]]; then
 fi
 
 RemoteBranch="$1"
-echo "Checking out branch $1..."
+echo "Checking out branch $RemoteBranch..."
 
 git branch --track $RemoteBranch origin/$RemoteBranch
 git checkout $RemoteBranch

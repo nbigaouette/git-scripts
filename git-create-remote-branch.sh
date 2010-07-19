@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RemoteBranch="$1"
-echo "Creating remote branch $1..."
+echo "Creating remote branch $RemoteBranch..."
 
 git push origin origin:refs/heads/$RemoteBranch
 git fetch origin
