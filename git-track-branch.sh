@@ -1,10 +1,21 @@
 #!/bin/bash
 
-if [[ "x$1" == "x" ]]; then
-	echo "Usage: $0 branch_name"
-	echo "Available branches:"
-	git branch -r | sed -e "s|origin/||g" | grep -v "HEAD"
-	exit
+help() {
+    echo "Create a new local branch that tracks changes in a remote repository."
+}
+
+error() {
+    echo -e "\e[31;1mERROR: $@"
+    exit
+}
+
+if [[ -z "$1" ]]; then
+    help
+    echo "Usage:"
+    echo "$ `basename $0` branch_name"
+    echo "Available branches:"
+    git branch -r | sed -e "s|origin/||g" | grep -v "HEAD"
+    exit
 fi
 
 RemoteBranch="$1"
