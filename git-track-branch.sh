@@ -29,6 +29,18 @@ col_r="\e[31;1m"
 col_g="\e[32;1m"
 col_n="\e[0m"
 
+log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
+branches=(`git branch -a | grep remotes | grep -v HEAD | sed "s|.*/||g"`)
+branch_present="false"
+for branch in ${branches[*]}; do
+    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+        branch_present="true"
+    fi
+done
+if [[ "${branch_present}" == "false" ]]; then
+    error "Branch ${col_g}${RemoteBranch}${col_b} does not exist remotely!"
+fi
+
 log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch..."
 git branch --track $RemoteBranch origin/$RemoteBranch \
     || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
