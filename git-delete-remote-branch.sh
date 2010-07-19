@@ -46,9 +46,18 @@ col_r="\e[31;1m"
 col_g="\e[32;1m"
 col_n="\e[0m"
 
-log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}..."
-git branch -d ${RemoteBranch} \
-    || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
+branches=(`git branch | sed "s|.* ||g"`)
+branch_present="false"
+for branch in ${branches[*]}; do
+    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+        branch_present="true"
+    fi
+done
+if [[ "${branch_present}" == "true" ]]; then
+    log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}..."
+    git branch -d ${RemoteBranch} \
+        || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
+fi
 
 log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}..."
 git push origin :heads/${RemoteBranch} \
