@@ -30,6 +30,8 @@ col_g="\e[32;1m"
 col_n="\e[0m"
 
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
+log "    Fetching origin..."
+git fetch origin || error "Can't fetch origin!"
 branches=(`git branch -a | grep remotes | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
 for branch in ${branches[*]}; do
