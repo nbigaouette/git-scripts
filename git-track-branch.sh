@@ -34,6 +34,7 @@ if [[ -z "$1" ]]; then
     help
     echo "Usage:"
     echo "$ `basename $0` branch_name"
+    echo " "
     echo "Available branches:"
     git branch -r | sed -e "s|origin/||g" | grep -v "HEAD"
     exit

@@ -34,8 +34,9 @@ if [[ -z "$1" ]]; then
     help
     echo "Usage:"
     echo "$ `basename $0` branch_name"
-
-
+    echo " "
+    echo "Existing (local) branches:"
+    git branch
     exit
 fi
 
