@@ -50,7 +50,7 @@ col_n="\e[0m"
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
 log "    Fetching origin..."
 git fetch origin || error "Can't fetch origin!"
-branches=(`git branch -a | grep remotes | grep -v HEAD | sed "s|.*/||g"`)
+branches=(`git branch -r | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
 for branch in ${branches[*]}; do
     if [[ "${branch}" == "${RemoteBranch}" ]]; then
@@ -61,9 +61,31 @@ if [[ "${branch_present}" == "false" ]]; then
     error "Branch ${col_g}${RemoteBranch}${col_b} does not exist remotely!"
 fi
 
-log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch..."
-git branch --track $RemoteBranch origin/$RemoteBranch \
-    || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
+
+log "Verifying that branch ${col_g}${RemoteBranch}${col_b} does not exist locally..."
+branches=(`git branch | sed "s|.* ||g"`)
+branch_present="false"
+for branch in ${branches[*]}; do
+    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+        branch_present="true"
+    fi
+done
+if [[ "${branch_present}" == "true" ]]; then
+    log "${col_r}Branch ${col_g}${RemoteBranch}${col_r} exist locally!${col_n}"
+    log "Do you want to set it so it tracks the remote branch? [y/N]"
+    read answer
+    if [[ "${answer}" != "y" && "${answer}" != "yes" ]]; then
+        log "Exiting."
+        exit
+    fi
+
+    git branch --set-upstream $RemoteBranch origin/$RemoteBranch \
+        || error "Setting branch $RemoteBranch to track remote one failed!"
+else
+    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch..."
+    git branch --track $RemoteBranch origin/$RemoteBranch \
+        || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
+fi
 
 log "Switching to local branch ${col_g}${RemoteBranch}${col_b}..."
 git checkout $RemoteBranch \
