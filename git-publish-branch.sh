@@ -40,4 +40,6 @@ cmd="git config branch.${branch}.merge refs/heads/${branch}"
 log "Telling git to merge the remote branch ${col_g}${branch}${col_b} when pulling: ${col_c}${cmd}"
 $cmd || error "Telling git to merge the remote branch ${col_g}${branch}${col_r} when pulling failed!"
 
-
+cmd="git branch -a"
+log "Updated list of all branches: ${col_c}${cmd}"
+$cmd
