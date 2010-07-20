@@ -17,62 +17,42 @@
 # You should have received a copy of the GNU General Public License
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
-help() {
-    echo "Create a new local branch that tracks changes in a remote repository."
+function git-scripts-help() {
+    log "Create a new local branch that tracks changes in a remote repository."
 }
 
-error() {
-    echo -e "${col_r}ERROR: $@${col_n}"
-    exit
-}
+source `dirname $0`/git-common.sh
 
-log() {
-    echo -e "${col_b}$@${col_n}"
-}
+branch="$1"
+remote="${2-origin}"
 
-if [[ -z "$1" ]]; then
-    help
-    echo "Usage:"
-    echo "$ `basename $0` branch_name"
-    echo " "
-    echo "Available branches:"
-    git branch -r | sed -e "s|origin/||g" | grep -v "HEAD"
-    exit
-fi
+verify_if_remote_exist ${remote}
 
-RemoteBranch="$1"
-
-col_b="\e[34;1m"
-col_r="\e[31;1m"
-col_g="\e[32;1m"
-col_c="\e[36;1m"
-col_n="\e[0m"
-
-log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
-cmd="git fetch origin"
-log "Fetching origin: ${col_c}${cmd}"
-$cmd || error "Can't fetch origin!"
+log "Verifying that branch ${col_g}${branch}${col_b} exist remotely..."
+cmd="git fetch ${remote}"
+log "Fetching ${remote}: ${col_c}${cmd}"
+$cmd || error "Can't fetch ${remote}!"
 branches=(`git branch -r | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
 for branch in ${branches[*]}; do
-    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+    if [[ "${branch}" == "${branch}" ]]; then
         branch_present="true"
     fi
 done
 if [[ "${branch_present}" == "false" ]]; then
-    error "Branch ${col_g}${RemoteBranch}${col_b} does not exist remotely!"
+    error "Branch ${col_g}${branch}${col_b} does not exist remotely!"
 fi
 
-log "Verifying that branch ${col_g}${RemoteBranch}${col_b} does not exist locally..."
+log "Verifying that branch ${col_g}${branch}${col_b} does not exist locally..."
 branches=(`git branch | sed "s|.* ||g"`)
 branch_present="false"
-for branch in ${branches[*]}; do
-    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+for b in ${branches[*]}; do
+    if [[ "${b}" == "${branch}" ]]; then
         branch_present="true"
     fi
 done
 if [[ "${branch_present}" == "true" ]]; then
-    log "${col_r}Branch ${col_g}${RemoteBranch}${col_r} exist locally!${col_n}"
+    log "${col_r}Branch ${col_g}${branch}${col_r} exist locally!${col_n}"
     log "Do you want to set it so it tracks the remote branch? [y/N]"
     read answer
     if [[ "${answer}" != "y" && "${answer}" != "yes" ]]; then
@@ -80,18 +60,18 @@ if [[ "${branch_present}" == "true" ]]; then
         exit
     fi
 
-    cmd="git branch --set-upstream $RemoteBranch origin/$RemoteBranch"
+    cmd="git branch --set-upstream $branch ${remote}/$branch"
     log "Setting local branch to track remote one: ${col_c}${cmd}"
-    $cmd || error "Setting branch $RemoteBranch to track remote one failed!"
+    $cmd || error "Setting branch $branch to track remote one failed!"
 else
-    cmd="git branch --track $RemoteBranch origin/$RemoteBranch"
-    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch: ${col_c}${cmd}"
-    $cmd || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
+    cmd="git branch --track $branch ${remote}/$branch"
+    log "Creating local branch ${col_g}${branch}${col_b} to track remote branch: ${col_c}${cmd}"
+    $cmd || error "Creation of local tracking branch ${col_g}${branch}${col_b} failed!"
 fi
 
-cmd="git checkout $RemoteBranch"
-log "Switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
-$cmd || error "Checkout of local branch ${col_g}${RemoteBranch}${col_b} failed!"
+cmd="git checkout $branch"
+log "Switching to local branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
+$cmd || error "Checkout of local branch ${col_g}${branch}${col_b} failed!"
 
 cmd="git branch -a"
 log "Updated list of all branches: ${col_c}${cmd}"

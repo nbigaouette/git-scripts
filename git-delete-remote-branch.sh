@@ -17,53 +17,61 @@
 # You should have received a copy of the GNU General Public License
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
-help() {
-    echo "Delete a remote branch and its local tracking branch, if present."
+function git-scripts-help() {
+    log "Delete a remote branch and its local tracking branch, if present."
 }
 
-error() {
-    echo -e "${col_r}ERROR: $@${col_n}"
-    exit
-}
+source `dirname $0`/git-common.sh
 
-log() {
-    echo -e "${col_b}$@${col_n}"
-}
+branch="$1"
+remote="${2-origin}"
 
-if [[ -z "$1" ]]; then
-    help
-    echo "Usage:"
-    echo "$ `basename $0` branch_name"
-    echo " "
-    echo "Existing (local) branches:"
-    git branch
-    exit
-fi
+verify_if_remote_exist ${remote}
 
-RemoteBranch="$1"
-
-col_b="\e[34;1m"
-col_r="\e[31;1m"
-col_g="\e[32;1m"
-col_c="\e[36;1m"
-col_n="\e[0m"
-
+log "Verifying that branch ${col_g}${branch}${col_b} exist locally..."
 branches=(`git branch | sed "s|.* ||g"`)
 branch_present="false"
-for branch in ${branches[*]}; do
-    if [[ "${branch}" == "${RemoteBranch}" ]]; then
+for b in ${branches[*]}; do
+    if [[ "${b}" == "${branch}" ]]; then
         branch_present="true"
     fi
 done
 if [[ "${branch_present}" == "true" ]]; then
-    cmd="git branch -d ${RemoteBranch}"
-    log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
-    $cmd || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
+    log "Local branch ${col_g}${branch}${col_b} exist. Do you want to delete it? [y/N]"
+    read answer
+    if [[ "${answer}" == "y" || "${answer}" == "yes" ]]; then
+        cmd="git checkout master"
+        log "Making sure we are on branch \"master\": ${col_c}${cmd}"
+        $cmd || error "Going to branch \"master\" failed!"
+
+        cmd="git branch -d ${branch}"
+        log "Suppression of local branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
+        $cmd || error "Suppression of local branch ${col_g}${branch}${col_r} failed!"
+    fi
+else
+    log "Local branch ${col_g}${branch}${col_b} does not exist. Continuing."
 fi
 
-cmd="git push origin :heads/${RemoteBranch}"
-log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
-$cmd || error "Suppression of remote branch ${col_g}${RemoteBranch}${col_b} failed!"
+cmd="git fetch ${remote}"
+log "Fetching ${remote}: ${col_c}${cmd}"
+$cmd || error "Can't fetch ${remote}!"
+
+branches=(`git branch -r | grep ${remote} | grep -v HEAD | sed "s|.*/||g"`)
+branch_present="false"
+for b in ${branches[*]}; do
+    if [[ "${b}" == "${branch}" ]]; then
+        branch_present="true"
+    fi
+done
+if [[ "${branch_present}" == "false" ]]; then
+    error "Branch ${col_g}${branch}${col_r} does not exist remotely!" "dont_exit"
+    git branch -a
+    exit
+fi
+
+cmd="git push ${remote} :heads/${branch}"
+log "Suppression of remote branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
+$cmd || error "Suppression of remote branch ${col_g}${branch}${col_r} failed!"
 
 cmd="git branch -a"
 log "Updated list of all branches: ${col_c}${cmd}"
