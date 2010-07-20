@@ -48,8 +48,9 @@ col_g="\e[32;1m"
 col_n="\e[0m"
 
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
-log "    Fetching origin..."
-git fetch origin || error "Can't fetch origin!"
+cmd="git fetch origin"
+log "Fetching origin: ${col_g}${cmd}"
+$cmd || error "Can't fetch origin!"
 branches=(`git branch -r | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
 for branch in ${branches[*]}; do
@@ -60,7 +61,6 @@ done
 if [[ "${branch_present}" == "false" ]]; then
     error "Branch ${col_g}${RemoteBranch}${col_b} does not exist remotely!"
 fi
-
 
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} does not exist locally..."
 branches=(`git branch | sed "s|.* ||g"`)
@@ -79,17 +79,19 @@ if [[ "${branch_present}" == "true" ]]; then
         exit
     fi
 
-    git branch --set-upstream $RemoteBranch origin/$RemoteBranch \
-        || error "Setting branch $RemoteBranch to track remote one failed!"
+    cmd="git branch --set-upstream $RemoteBranch origin/$RemoteBranch"
+    log "Setting local branch to track remote one: ${col_g}${cmd}"
+    $cmd || error "Setting branch $RemoteBranch to track remote one failed!"
 else
-    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch..."
-    git branch --track $RemoteBranch origin/$RemoteBranch \
-        || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
+    cmd="git branch --track $RemoteBranch origin/$RemoteBranch"
+    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch: ${col_g}${cmd}"
+    $cmd || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
 fi
 
-log "Switching to local branch ${col_g}${RemoteBranch}${col_b}..."
-git checkout $RemoteBranch \
-    || error "Checkout of local branch ${col_g}${RemoteBranch}${col_b} failed!"
+cmd="git checkout $RemoteBranch"
+log "Switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+$cmd || error "Checkout of local branch ${col_g}${RemoteBranch}${col_b} failed!"
 
-log "Updated list of all branches:"
-git branch -a
+cmd="git branch -a"
+log "Updated list of all branches: ${col_g}${cmd}"
+$cmd

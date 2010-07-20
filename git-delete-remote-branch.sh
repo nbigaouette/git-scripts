@@ -60,9 +60,10 @@ if [[ "${branch_present}" == "true" ]]; then
         || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
 fi
 
-log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}..."
-git push origin :heads/${RemoteBranch} \
-    || error "Suppression of remote branch ${col_g}${RemoteBranch}${col_b} failed!"
+cmd="git push origin :heads/${RemoteBranch}"
+log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+$cmd || error "Suppression of remote branch ${col_g}${RemoteBranch}${col_b} failed!"
 
-log "Updated list of all branches:"
-git branch -a
+cmd="git branch -a"
+log "Updated list of all branches: ${col_g}${cmd}"
+$cmd
