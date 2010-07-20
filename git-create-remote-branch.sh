@@ -45,11 +45,12 @@ RemoteBranch="$1"
 col_b="\e[34;1m"
 col_r="\e[31;1m"
 col_g="\e[32;1m"
+col_c="\e[36;1m"
 col_n="\e[0m"
 
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} does NOT exist remotely..."
 cmd="git fetch origin"
-log "Fetching origin: ${col_g}${cmd}"
+log "Fetching origin: ${col_c}${cmd}"
 $cmd || error "Can't fetch origin!"
 branches=(`git branch -a | grep remotes | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
@@ -63,18 +64,18 @@ if [[ "${branch_present}" == "true" ]]; then
 fi
 
 cmd="git push origin origin:refs/heads/$RemoteBranch"
-log "Creating remote branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+log "Creating remote branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Creating remote branch ${col_g}${RemoteBranch}${col_b} failed!"
 
 cmd="git fetch origin"
-log "Fetching origin: ${col_g}${cmd}"
+log "Fetching origin: ${col_c}${cmd}"
 $cmd || error "Fetching origin failed!"
 
 cmd="git checkout --track -b $RemoteBranch origin/$RemoteBranch"
-log "Creating and switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+log "Creating and switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Creating and switching to local branch ${col_g}${RemoteBranch}${col_b} failed!"
 
 cmd="git branch -a"
-log "Updated list of all branches: ${col_g}${cmd}"
+log "Updated list of all branches: ${col_c}${cmd}"
 $cmd
 

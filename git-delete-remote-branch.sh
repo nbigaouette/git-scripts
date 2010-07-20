@@ -45,6 +45,7 @@ RemoteBranch="$1"
 col_b="\e[34;1m"
 col_r="\e[31;1m"
 col_g="\e[32;1m"
+col_c="\e[36;1m"
 col_n="\e[0m"
 
 branches=(`git branch | sed "s|.* ||g"`)
@@ -55,15 +56,15 @@ for branch in ${branches[*]}; do
     fi
 done
 if [[ "${branch_present}" == "true" ]]; then
-    log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}..."
-    git branch -d ${RemoteBranch} \
-        || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
+    cmd="git branch -d ${RemoteBranch}"
+    log "Suppression of local branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
+    $cmd || error "Suppression of local branch ${col_g}${RemoteBranch}${col_r} failed!"
 fi
 
 cmd="git push origin :heads/${RemoteBranch}"
-log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+log "Suppression of remote branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Suppression of remote branch ${col_g}${RemoteBranch}${col_b} failed!"
 
 cmd="git branch -a"
-log "Updated list of all branches: ${col_g}${cmd}"
+log "Updated list of all branches: ${col_c}${cmd}"
 $cmd

@@ -45,11 +45,12 @@ RemoteBranch="$1"
 col_b="\e[34;1m"
 col_r="\e[31;1m"
 col_g="\e[32;1m"
+col_c="\e[36;1m"
 col_n="\e[0m"
 
 log "Verifying that branch ${col_g}${RemoteBranch}${col_b} exist remotely..."
 cmd="git fetch origin"
-log "Fetching origin: ${col_g}${cmd}"
+log "Fetching origin: ${col_c}${cmd}"
 $cmd || error "Can't fetch origin!"
 branches=(`git branch -r | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
@@ -80,18 +81,18 @@ if [[ "${branch_present}" == "true" ]]; then
     fi
 
     cmd="git branch --set-upstream $RemoteBranch origin/$RemoteBranch"
-    log "Setting local branch to track remote one: ${col_g}${cmd}"
+    log "Setting local branch to track remote one: ${col_c}${cmd}"
     $cmd || error "Setting branch $RemoteBranch to track remote one failed!"
 else
     cmd="git branch --track $RemoteBranch origin/$RemoteBranch"
-    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch: ${col_g}${cmd}"
+    log "Creating local branch ${col_g}${RemoteBranch}${col_b} to track remote branch: ${col_c}${cmd}"
     $cmd || error "Creation of local tracking branch ${col_g}${RemoteBranch}${col_b} failed!"
 fi
 
 cmd="git checkout $RemoteBranch"
-log "Switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_g}${cmd}"
+log "Switching to local branch ${col_g}${RemoteBranch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Checkout of local branch ${col_g}${RemoteBranch}${col_b} failed!"
 
 cmd="git branch -a"
-log "Updated list of all branches: ${col_g}${cmd}"
+log "Updated list of all branches: ${col_c}${cmd}"
 $cmd
