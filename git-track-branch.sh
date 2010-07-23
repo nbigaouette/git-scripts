@@ -34,8 +34,8 @@ log "Fetching ${remote}: ${col_c}${cmd}"
 $cmd || error "Can't fetch ${remote}!"
 branches=(`git branch -r | grep -v HEAD | sed "s|.*/||g"`)
 branch_present="false"
-for branch in ${branches[*]}; do
-    if [[ "${branch}" == "${branch}" ]]; then
+for b in ${branches[*]}; do
+    if [[ "${b}" == "${branch}" ]]; then
         branch_present="true"
     fi
 done
