@@ -40,7 +40,7 @@ for b in ${branches[*]}; do
     fi
 done
 if [[ "${branch_present}" == "false" ]]; then
-    error "Branch ${col_g}${branch}${col_b} does not exist remotely!"
+    error "Branch ${col_g}${branch}${col_r} does not exist remotely!"
 fi
 
 log "Verifying that branch ${col_g}${branch}${col_b} does not exist locally..."
