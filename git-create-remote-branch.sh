@@ -18,10 +18,23 @@
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
 function git-scripts-help() {
+    branch=${1}
+    remote=${2}
     log "Create a new branch on both local and remote repositories."
+    log "Details:"
+    log "  \$ ${col_c}git fetch ${remote}${col_b}"
+    log "  \$ ${col_c}git push ${remote} ${remote}:refs/heads/${branch}${col_b}"
+    log "  \$ ${col_c}git fetch ${remote}${col_b}"
+    log "  \$ ${col_c}git checkout --track -b ${branch} ${remote}/${branch}${col_b}"
 }
 
 source `dirname $0`/git-common.sh
+
+# Dry run (-v = verbose, -n = rsync's dry-run, -p = Gentoo's 'pretend')
+if [[ "$1" == "--dry-run" || "$1" == "-v" || "$1" == "-n" || "$1" == "-p" ]]; then
+    git-scripts-help ${2-BRANCH} ${3-origin}
+    exit
+fi
 
 branch="$1"
 remote="${2-origin}"
@@ -43,7 +56,7 @@ if [[ "${branch_present}" == "true" ]]; then
     error "Branch ${col_g}${branch}${col_r} already exist remotely!"
 fi
 
-cmd="git push ${remote} ${remote}:refs/heads/$branch"
+cmd="git push ${remote} ${remote}:refs/heads/${branch}"
 log "Creating remote branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Creating remote branch ${col_g}${branch}${col_b} failed!"
 
@@ -51,7 +64,7 @@ cmd="git fetch ${remote}"
 log "Fetching ${remote}: ${col_c}${cmd}"
 $cmd || error "Fetching ${remote} failed!"
 
-cmd="git checkout --track -b $branch ${remote}/$branch"
+cmd="git checkout --track -b ${branch} ${remote}/${branch}"
 log "Creating and switching to local branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Creating and switching to local branch ${col_g}${branch}${col_b} failed!"
 

@@ -18,10 +18,22 @@
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
 function git-scripts-help() {
+    branch=${1}
+    remote=${2}
     log "Publish the local branch to remote repository for '${col_c}git push${col_b}'."
+    log "Details:"
+    log "  \$ ${col_c}git push ${remote} ${branch}:refs/heads/${branch}${col_b}"
+    log "  \$ ${col_c}git config branch.${branch}.remote ${remote}${col_b}"
+    log "  \$ ${col_c}git config branch.${branch}.merge refs/heads/${branch}${col_b}"
 }
 
 source `dirname $0`/git-common.sh
+
+# Dry run (-v = verbose, -n = rsync's dry-run, -p = Gentoo's 'pretend')
+if [[ "$1" == "--dry-run" || "$1" == "-v" || "$1" == "-n" || "$1" == "-p" ]]; then
+    git-scripts-help ${2-BRANCH}
+    exit
+fi
 
 branch="$1"
 remote="${2-origin}"
