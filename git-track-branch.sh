@@ -18,10 +18,24 @@
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
 function git-scripts-help() {
+    branch=${1}
+    remote=${2}
     log "Create a new local branch that tracks changes in a remote repository."
+    log "Details:"
+    log "  \$ ${col_c}git fetch ${remote}${col_b}"
+    log "If branch does not exist:"
+    log "  \$ ${col_c}git branch --track ${branch} ${remote}/${branch}${col_b}"
+    log "If branch does exist:"
+    log "  \$ ${col_c}git branch --set-upstream ${branch} ${remote}/${branch}${col_b}"
 }
 
 source `dirname $0`/git-common.sh
+
+# Dry run (-v = verbose, -n = rsync's dry-run, -p = Gentoo's 'pretend')
+if [[ "$1" == "--dry-run" || "$1" == "-v" || "$1" == "-n" || "$1" == "-p" ]]; then
+    git-scripts-help ${2-BRANCH} ${3-origin}
+    exit
+fi
 
 branch="$1"
 remote="${2-origin}"
@@ -60,16 +74,16 @@ if [[ "${branch_present}" == "true" ]]; then
         exit
     fi
 
-    cmd="git branch --set-upstream $branch ${remote}/$branch"
+    cmd="git branch --set-upstream ${branch} ${remote}/${branch}"
     log "Setting local branch to track remote one: ${col_c}${cmd}"
-    $cmd || error "Setting branch $branch to track remote one failed!"
+    $cmd || error "Setting branch ${branch} to track remote one failed!"
 else
-    cmd="git branch --track $branch ${remote}/$branch"
+    cmd="git branch --track ${branch} ${remote}/${branch}"
     log "Creating local branch ${col_g}${branch}${col_b} to track remote branch: ${col_c}${cmd}"
     $cmd || error "Creation of local tracking branch ${col_g}${branch}${col_b} failed!"
 fi
 
-cmd="git checkout $branch"
+cmd="git checkout ${branch}"
 log "Switching to local branch ${col_g}${branch}${col_b}: ${col_c}${cmd}"
 $cmd || error "Checkout of local branch ${col_g}${branch}${col_b} failed!"
 

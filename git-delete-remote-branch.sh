@@ -18,10 +18,20 @@
 # along with git-scripts. If not, see <http://www.gnu.org/licenses/>.
 
 function git-scripts-help() {
+    branch=${1}
+    remote=${2}
     log "Delete a remote branch and its local tracking branch, if present."
+    log "Details:"
+    log "  \$ ${col_c}git push ${remote} :heads/${branch}${col_b}"
 }
 
 source `dirname $0`/git-common.sh
+
+# Dry run (-v = verbose, -n = rsync's dry-run, -p = Gentoo's 'pretend')
+if [[ "$1" == "--dry-run" || "$1" == "-v" || "$1" == "-n" || "$1" == "-p" ]]; then
+    git-scripts-help ${2-BRANCH} ${3-origin}
+    exit
+fi
 
 branch="$1"
 remote="${2-origin}"
