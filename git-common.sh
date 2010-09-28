@@ -46,7 +46,7 @@ function git-scripts-usage() {
     fi
     for r in ${remotes[*]}; do
         log "  On remote \"${col_g}${r}${col_b}\":"
-        remote_branches=(`git branch -r | grep ${r} | grep -v HEAD | sed "s|.*/||g"`)
+        remote_branches=(`git branch -r | grep -v HEAD | grep " ${r}" | sed "s|.*/||g"`)
         if [[ "${#remote_branches[*]}" == 0 ]]; then
             echo "    None"
         fi
