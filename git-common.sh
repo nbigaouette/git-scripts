@@ -61,6 +61,8 @@ function verify_if_remote_exist()
 {
     remote="$1"
 
+    git remote prune ${remote}
+
     log "Verifying if a remote \"${col_g}${remote}${col_b}\" exist"
     remotes=(`git remote`)
     remote_exist="false"
