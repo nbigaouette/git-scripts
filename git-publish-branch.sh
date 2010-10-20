@@ -31,7 +31,7 @@ source `dirname $0`/git-common.sh
 
 # Dry run (-v = verbose, -n = rsync's dry-run, -p = Gentoo's 'pretend')
 if [[ "$1" == "--dry-run" || "$1" == "-v" || "$1" == "-n" || "$1" == "-p" ]]; then
-    git-scripts-help ${2-BRANCH}
+    git-scripts-help ${2-BRANCH} ${3-REMOTE}
     exit
 fi
 
