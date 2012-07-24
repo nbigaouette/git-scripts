@@ -58,6 +58,16 @@ function git-scripts-usage() {
     [[ "$1" != "dont_exit" ]] && exit
 }
 
+# Parse command line arguments. If none or "-h" is given, print the usage and exit.
+while getopts "h" opt; do
+    case $opt in
+        h)
+            git-scripts-usage
+    esac
+done
+[[ "$@" == "" ]] && git-scripts-usage
+
+
 function verify_if_remote_exist()
 {
     remote="$1"
