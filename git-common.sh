@@ -34,7 +34,7 @@ function error() {
 
 function git-scripts-usage() {
     log "Usage:"
-    log "$ ${col_c}`basename $0` branch_name remote_name${col_n}"
+    log "$ ${col_c}`basename $0` branch_name [remote_name]${col_n}"
     log "By default (if not given), \"remote_name\" is \"origin\" but could be something else."
     log " "
     log "Existing (local) branches:"
